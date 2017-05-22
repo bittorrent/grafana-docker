@@ -4,13 +4,19 @@
 : "${GF_PATHS_LOGS:=/var/log/grafana}"
 : "${GF_PATHS_PLUGINS:=/var/lib/grafana/plugins}"
 
+if ! [[ -f /etc/grafana/grafana.ini ]] ; then
+    # bootstrap the configuration and set permissions
+    cp -R /grafana-default-config/. /etc/grafana
+    chmod -R 770 /etc/grafana
+fi
+
 chown -R grafana:grafana "$GF_PATHS_DATA" "$GF_PATHS_LOGS"
 chown -R grafana:grafana /etc/grafana
 
-# When a persistent volume claim is mounted from Kubernetes, the permissions are
-# far too strict.
-chmod -R 770 "$GF_PATHS_DATA" "$GF_PATHS_LOGS";
-chmod -R 770 /etc/grafana
+# When a persistent volume claim is first mounted from Kubernetes, the
+# permissions are far too strict.
+chmod 770 "$GF_PATHS_DATA" "$GF_PATHS_LOGS";
+chmod 770 /etc/grafana
 
 if [ ! -z ${GF_AWS_PROFILES+x} ]; then
     mkdir -p ~grafana/.aws/

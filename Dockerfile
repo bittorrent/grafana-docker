@@ -14,9 +14,9 @@ RUN apt-get update && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
-
 EXPOSE 3000
 
 COPY ./run.sh /run.sh
+COPY ./grafana-default-config /grafana-default-config
 
 ENTRYPOINT ["/run.sh"]
