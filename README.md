@@ -1,6 +1,6 @@
 # Grafana Docker image
 
-This project builds a Docker image with the latest master build of Grafana.
+This project builds a Docker image with the latest master build or specific tag of Grafana.
 
 ## Running your Grafana container
 
@@ -30,20 +30,9 @@ docker run \
 
 More information in the grafana configuration documentation: http://docs.grafana.org/installation/configuration/
 
-## Grafana container with persistent storage (recommended)
+## Grafana container with persistent storage via AWS EFS
 
-```
-# create /var/lib/grafana as persistent volume storage
-docker run -d -v /var/lib/grafana --name grafana-storage busybox:latest
-
-# start grafana
-docker run \
-  -d \
-  -p 3000:3000 \
-  --name=grafana \
-  --volumes-from grafana-storage \
-  grafana/grafana
-```
+The provided Kubernetes yaml configurations (located in `kubernetes/`), provide two Persistent Volume Claims that are used for the Grafana database and configuration.
 
 ## Installing plugins for Grafana 3
 
@@ -104,4 +93,3 @@ Supported variables:
 
 ### v3.1.1
 * Make it possible to install specific plugin version https://github.com/grafana/grafana-docker/issues/59#issuecomment-260584026
-

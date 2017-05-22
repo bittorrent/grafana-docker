@@ -1,0 +1,84 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: grafana-database
+  annotations:
+    volume.beta.kubernetes.io/storage-class: aws-efs
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Ti
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: grafana-config
+  annotations:
+    volume.beta.kubernetes.io/storage-class: aws-efs
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Ti
+
+---
+
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      name: grafana
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: bittorrent/grafana
+          resources:
+            requests:
+              memory: 1024Mi
+            limits:
+              memory: 1024Mi
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana-database
+            - mountPath: /etc/grafana
+              name: grafana-config
+      volumes:
+        - name: grafana-database
+          persistentVolumeClaim:
+            claimName: grafana-database
+        - name: grafana-config
+          persistentVolumeClaim:
+            claimName: grafana-config
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+spec:
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: grafana
+  type: ClusterIP
