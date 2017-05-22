@@ -7,6 +7,11 @@
 chown -R grafana:grafana "$GF_PATHS_DATA" "$GF_PATHS_LOGS"
 chown -R grafana:grafana /etc/grafana
 
+# When a persistent volume claim is mounted from Kubernetes, the permissions are
+# far too strict.
+chmod -R 770 "$GF_PATHS_DATA" "$GF_PATHS_LOGS";
+chmod -R 770 /etc/grafana
+
 if [ ! -z ${GF_AWS_PROFILES+x} ]; then
     mkdir -p ~grafana/.aws/
     touch ~grafana/.aws/credentials
