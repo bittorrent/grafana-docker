@@ -48,6 +48,7 @@ spec:
       containers:
         - name: grafana
           image: bittorrent/grafana
+          imagePullPolicy: Always
           resources:
             requests:
               memory: 1024Mi
